@@ -73,7 +73,7 @@ export function CommandPalette() {
       { id: 'new-memo', group: 'Actions', label: 'Generate a memo', icon: FileText, run: go('/memos?new=1') },
       { id: 'save-scn', group: 'Actions', label: 'Save current lab setup as scenario', icon: GitCompareArrows, run: go('/lab?save=1') },
       { id: 'prefill', group: 'Actions', label: 'Prefill tier prices from a study', icon: SlidersHorizontal, run: go('/lab?prefill=1') },
-      { id: 'about', group: 'Actions', label: 'About this project', icon: BookOpen, run: () => setIntroOpen(true) },
+      { id: 'about', group: 'Actions', label: 'About Goldilocks', icon: BookOpen, run: () => setIntroOpen(true) },
       { id: 'keys', group: 'Actions', label: 'Keyboard shortcuts', hint: '?', icon: Keyboard, run: () => setShortcutsOpen(true) },
       ...studies.map((s) => ({
         id: `study-${s.id}`,

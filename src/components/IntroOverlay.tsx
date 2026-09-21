@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, FlaskConical } from 'lucide-react';
 import { useEffect } from 'react';
 import { intro } from '../data/intro';
 import { useStore } from '../store/useStore';
@@ -145,7 +145,7 @@ export function IntroOverlay() {
             <div className="flex items-center justify-between py-6">
               <div className="flex items-center gap-2.5">
                 <LogoMark />
-                <span className="text-[13px] font-medium text-muted">{intro.author}</span>
+                <span className="font-display text-[19px] font-medium tracking-[-0.01em] text-ink">{intro.title}</span>
               </div>
               <button onClick={close} className="rounded-md px-2 py-1 text-[13px] font-medium text-muted hover:bg-sunken hover:text-ink">
                 {intro.skip} <span className="ml-1 text-faint">Esc</span>
@@ -153,24 +153,17 @@ export function IntroOverlay() {
             </div>
 
             <motion.div variants={container} initial="hidden" animate="show">
-              <div className="grid items-center gap-10 pt-6 lg:grid-cols-[1.1fr_1fr]">
+              <div className="grid items-center gap-10 pt-4 lg:grid-cols-[1.1fr_1fr]">
                 <div>
-                  <motion.div variants={item} className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-[12px] font-semibold tracking-wide text-brand-800 uppercase ring-1 ring-brand-100">
-                    <Sparkles size={13} /> {intro.eyebrow}
-                  </motion.div>
-                  <motion.h1 variants={item} className="mt-5 font-display text-[64px] leading-[0.95] font-medium tracking-[-0.03em] text-ink sm:text-[84px]">
+                  <motion.h1 variants={item} className="font-display text-[64px] leading-[0.95] font-medium tracking-[-0.03em] text-ink sm:text-[84px]">
                     {intro.title}
                   </motion.h1>
                   <motion.p variants={item} className="mt-4 font-display text-[26px] text-brand-800 italic">
-                    {intro.hook}
+                    {intro.tagline}
                   </motion.p>
                   <motion.div variants={item} className="mt-8 max-w-xl">
-                    <h2 className="text-[12px] font-semibold tracking-wider text-muted uppercase">{intro.problem.heading}</h2>
-                    {intro.problem.body.map((p) => (
-                      <p key={p.slice(0, 20)} className="mt-3 text-[15.5px] leading-relaxed text-ink-2">
-                        {p}
-                      </p>
-                    ))}
+                    <h2 className="text-[12px] font-semibold tracking-wider text-muted uppercase">{intro.what.heading}</h2>
+                    <p className="mt-3 text-[16px] leading-relaxed text-ink-2">{intro.what.body}</p>
                   </motion.div>
                 </div>
                 <motion.div variants={item} className="rounded-2xl border border-line bg-surface/80 p-6 shadow-card backdrop-blur">
@@ -178,61 +171,40 @@ export function IntroOverlay() {
                 </motion.div>
               </div>
 
-              <motion.section variants={item} className="mt-16">
-                <h2 className="text-[12px] font-semibold tracking-wider text-muted uppercase">{intro.audience.heading}</h2>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
-                  {intro.audience.items.map((a) => (
-                    <div key={a.who} className="rounded-xl border border-line bg-surface p-4">
-                      <div className="text-[15px] font-semibold text-ink">{a.who}</div>
-                      <div className="mt-1 text-[14px] leading-relaxed text-muted">{a.why}</div>
-                    </div>
-                  ))}
-                </div>
-              </motion.section>
+              <div className="mt-14 grid gap-3 md:grid-cols-2">
+                {[intro.audience, intro.problem].map((s) => (
+                  <motion.section key={s.heading} variants={item} className="rounded-xl border border-line bg-surface p-5">
+                    <h2 className="text-[12px] font-semibold tracking-wider text-muted uppercase">{s.heading}</h2>
+                    <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{s.body}</p>
+                  </motion.section>
+                ))}
+              </div>
 
               <motion.section variants={item} className="mt-12">
                 <h2 className="text-[12px] font-semibold tracking-wider text-muted uppercase">{intro.steps.heading}</h2>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                <ol className="mt-4 grid gap-3 md:grid-cols-3">
                   {intro.steps.items.map((s, i) => (
-                    <div key={s.title} className="relative overflow-hidden rounded-xl border border-line bg-surface p-5">
+                    <li key={s} className="relative overflow-hidden rounded-xl border border-line bg-surface p-5">
                       <div className="font-display text-[44px] leading-none text-brand-600/25">{i + 1}</div>
-                      <div className="mt-2 text-[15px] font-semibold text-ink">{s.title}</div>
-                      <p className="mt-1.5 text-[14px] leading-relaxed text-muted">{s.body}</p>
-                    </div>
+                      <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">{s}</p>
+                    </li>
                   ))}
+                </ol>
+              </motion.section>
+
+              <motion.section variants={item} className="mt-12 flex gap-4 rounded-2xl border border-[#f6dcaa] bg-[#fef6e7] p-5 sm:p-6">
+                <FlaskConical size={20} className="mt-0.5 shrink-0 text-porridge" />
+                <div>
+                  <h2 className="text-[14px] font-semibold text-[#8a5a10]">{intro.demo.heading}</h2>
+                  <p className="mt-1 text-[14.5px] leading-relaxed text-ink-2">{intro.demo.body}</p>
                 </div>
               </motion.section>
 
-              <div className="mt-12 grid gap-10 lg:grid-cols-2">
-                <motion.section variants={item}>
-                  <h2 className="text-[12px] font-semibold tracking-wider text-muted uppercase">{intro.metrics.heading}</h2>
-                  <div className="mt-4 divide-y divide-line rounded-xl border border-line bg-surface">
-                    {intro.metrics.items.map((m) => (
-                      <div key={m.label} className="flex items-center gap-5 px-5 py-4">
-                        <div className="w-24 shrink-0 font-display text-[26px] font-medium text-brand-700 tabular">{m.value}</div>
-                        <div>
-                          <div className="text-[14px] font-semibold text-ink">{m.label}</div>
-                          <div className="text-[13px] text-muted">{m.note}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.section>
-                <motion.section variants={item}>
-                  <h2 className="text-[12px] font-semibold tracking-wider text-muted uppercase">{intro.approach.heading}</h2>
-                  <div className="mt-4 space-y-3">
-                    {intro.approach.items.map((a) => (
-                      <div key={a.title} className="rounded-xl border border-line bg-surface p-4">
-                        <div className="text-[14px] font-semibold text-ink">{a.title}</div>
-                        <p className="mt-1 text-[13.5px] leading-relaxed text-muted">{a.body}</p>
-                      </div>
-                    ))}
-                  </div>
-                </motion.section>
-              </div>
-
-              <motion.p variants={item} className="mt-14 text-center font-display text-[18px] text-muted italic">
-                {intro.closing}
+              <motion.p variants={item} className="mt-12 text-center text-[13px] text-muted">
+                {intro.footer.prefix} ·{' '}
+                <a href={intro.footer.url} target="_blank" rel="noreferrer" className="font-medium text-brand-700 underline-offset-2 hover:underline">
+                  {intro.footer.linkLabel}
+                </a>
               </motion.p>
             </motion.div>
           </div>
@@ -244,9 +216,7 @@ export function IntroOverlay() {
             transition={{ delay: 0.6, type: 'spring', damping: 22 }}
           >
             <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5 sm:px-10">
-              <span className="hidden text-[13px] text-muted sm:block">
-                Everything runs in your browser. Reopen this anytime from <b className="font-medium text-ink-2">About this project</b> in the user menu.
-              </span>
+              <span className="hidden text-[13px] text-muted sm:block">{intro.reopenHint}</span>
               <div className="flex items-center gap-3">
                 <button onClick={close} className="text-[13px] font-medium text-muted hover:text-ink">
                   {intro.skip}

@@ -56,11 +56,11 @@ export function HelpPage() {
         ))}
         <Card className="flex flex-wrap items-center justify-between gap-3 p-5">
           <span className="flex items-center gap-2 text-[14px] text-ink-2">
-            <BookOpen size={16} className="text-brand-700" /> Want the story behind the product?
+            <BookOpen size={16} className="text-brand-700" /> New to Goldilocks? Take the two-minute tour.
           </span>
           <span className="flex gap-4 text-[13px] font-medium">
             <button className="text-brand-700 hover:text-brand-800" onClick={() => setIntroOpen(true)}>
-              About this project
+              About Goldilocks
             </button>
             <Link to="/studies/pro-q3/analysis" className="text-brand-700 hover:text-brand-800">
               See a finished study →

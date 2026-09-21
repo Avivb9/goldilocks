@@ -305,7 +305,7 @@ function UserMenu() {
           { label: 'Settings', icon: <Settings size={14} />, onSelect: () => navigate('/settings/workspace') },
           { label: 'Keyboard shortcuts', icon: <Keyboard size={14} />, hint: '?', onSelect: () => setShortcutsOpen(true) },
           'divider',
-          { label: 'About this project', icon: <BookOpen size={14} />, onSelect: () => setIntroOpen(true) },
+          { label: 'About Goldilocks', icon: <BookOpen size={14} />, onSelect: () => setIntroOpen(true) },
           { label: 'Help & methodology', icon: <CircleHelp size={14} />, onSelect: () => navigate('/help') },
           'divider',
           { label: 'Sign out', icon: <LogOut size={14} />, onSelect: () => setSignOut(true) },

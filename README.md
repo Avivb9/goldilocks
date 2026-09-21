@@ -6,7 +6,7 @@
 
 Goldilocks is a pricing-research workspace for B2B product marketers. You run Van Westendorp price-sensitivity studies, model packaging and pricing scenarios against a synthetic market, and turn the result into a recommendation memo with an A/B test plan.
 
-It's a portfolio project by [Aviv Braun](https://avivbraun.com), B2B Product Marketing. It runs entirely in the browser: no backend, no API keys. Every number is computed client-side with real math, and every sentence the product "writes" is a template filled with those computed numbers.
+Designed and built by [Aviv Braun](https://avivbraun.com). This is the demo version: it runs entirely in the browser with a sample workspace (Tidepool), example studies and survey responses. Every number is computed client-side, and every sentence the product writes is filled in from those computed numbers.
 
 ---
 
@@ -46,7 +46,7 @@ Accept the detected settings (framework: Vite, build: `npm run build`, output: `
 
 | Area | What it does |
 | --- | --- |
-| **Intro** | Full-screen project overview on every fresh session. Dismiss with *Start exploring*, *Skip* or Esc. Reopen from *About this project* in the user menu. Copy lives in `src/data/intro.ts`. |
+| **Intro** | Product overview on every fresh session: what it does, who it's for, how it works and a demo-version note. Dismiss with *Explore the demo*, *Skip* or Esc. Reopen from *About Goldilocks* in the user menu. Copy lives in `src/data/intro.ts`. |
 | **Studies** | Three seeded studies: completed (212 responses), fielding (live counter), draft. |
 | **New study wizard** | Product → Audience (segment mix, 50–500 target) → Survey (editable wording, live respondent preview) → Launch. |
 | **Fielding** | Shareable link (`/s/:slug` is a working survey that records answers), live counter and progress, segment quotas, streaming responses table, completion notification, close-early. |
@@ -118,7 +118,7 @@ Sample size per arm uses the two-proportion z-test at alpha 0.05 (two-sided) and
 
 Start from a fresh browser session (or a private window) so the intro shows.
 
-1. **0:00–0:08 · Intro.** Let the curves draw, scroll once to show *Try it in 3 steps* and *How I'd measure it*, then click **Start exploring**.
+1. **0:00–0:08 · Intro.** Let the curves draw, scroll once to show *How it works*, then click **Explore the demo**.
 2. **0:08–0:12 · Studies.** Point at the live *Enterprise add-ons* counter in the table and the sidebar.
 3. **0:12–0:24 · Analysis.** Click **Pro plan pricing, Q3**. Hover the chart near the shaded range, then click the **SMB** and **Enterprise** segment tabs so the range visibly moves. Let the summary finish writing.
 4. **0:24–0:28** Click **Use in Packaging lab**, then **Apply prices** in the prefill dialog.
@@ -133,4 +133,3 @@ Start from a fresh browser session (or a private window) so the intro shows.
 - The intro's dismissal is kept in `sessionStorage`, so it shows again in a new session.
 - *Download PDF* uses the browser's print dialog with a print stylesheet that shows only the memo.
 
-Working prototype built with Claude Code.
