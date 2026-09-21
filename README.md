@@ -2,6 +2,8 @@
 
 **Find the price that's just right.**
 
+**Live:** https://goldilocks-pricing.vercel.app
+
 Goldilocks is a pricing-research workspace for B2B product marketers. You run Van Westendorp price-sensitivity studies, model packaging and pricing scenarios against a synthetic market, and turn the result into a recommendation memo with an A/B test plan.
 
 It's a portfolio project by [Aviv Braun](https://avivbraun.com), B2B Product Marketing. It runs entirely in the browser: no backend, no API keys. Every number is computed client-side with real math, and every sentence the product "writes" is a template filled with those computed numbers.
