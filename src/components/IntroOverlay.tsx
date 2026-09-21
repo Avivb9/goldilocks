@@ -129,7 +129,7 @@ export function IntroOverlay() {
           className="fixed inset-0 z-[70] overflow-y-auto bg-canvas no-print"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.25 } }}
+          exit={{ opacity: 0, pointerEvents: 'none', transition: { duration: 0.25 } }}
           role="dialog"
           aria-modal="true"
           aria-label="About Goldilocks"

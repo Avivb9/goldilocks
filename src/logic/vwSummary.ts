@@ -20,7 +20,7 @@ export function vwSummary(params: {
   const width = (r.pme - r.pmc) / ((r.pme + r.pmc) / 2);
   const parts: string[] = [];
   parts.push(
-    `${who} (n=${num(r.n)}${trimmed ? `, ${num(trimmed)} outliers trimmed` : ''}) find ${product} acceptable between ${money(r.pmc, c)} and ${money(r.pme, c)} a month.`,
+    `${who} (n=${num(r.n)}${trimmed ? `, ${num(trimmed)} outlier${trimmed === 1 ? "" : "s"} trimmed` : ""}) find ${product} acceptable between ${money(r.pmc, c)} and ${money(r.pme, c)} a month.`,
   );
   if (r.opp !== null && r.ipp !== null) {
     const gap = r.ipp - r.opp;

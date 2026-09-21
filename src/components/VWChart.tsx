@@ -74,7 +74,7 @@ export function VWChart({ r, currency, height = 400 }: Props) {
   };
   const points = [
     { key: 'PMC', price: r.pmc, y: r.pmc !== null ? yAt(r.pmc, 'tooCheap') : 0, dy: -34 },
-    { key: 'OPP', price: r.opp, y: r.opp !== null ? yAt(r.opp, 'tooCheap') : 0, dy: 34 },
+    { key: 'OPP', price: r.opp, y: r.opp !== null ? yAt(r.opp, 'tooCheap') : 0, dy: -40 },
     { key: 'IPP', price: r.ipp, y: r.ipp !== null ? yAt(r.ipp, 'notCheap') : 0, dy: -34 },
     { key: 'PME', price: r.pme, y: r.pme !== null ? yAt(r.pme, 'tooExpensive') : 0, dy: 34 },
   ];

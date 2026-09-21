@@ -74,7 +74,7 @@ export function SurveyPage() {
   QKEYS.forEach((k, i) => {
     if (!vals[k]) errs[k] = 'Please enter a price.';
     else if (!(nums[i] > 0)) errs[k] = 'Enter a price above zero.';
-    else if (i > 0 && nums[i - 1] > 0 && nums[i] <= nums[i - 1]) errs[k] = `Should be higher than your answer to question ${i + 1}.`;
+    else if (i > 0 && nums[i - 1] > 0 && nums[i] <= nums[i - 1]) errs[k] = `Should be higher than your answer to question ${i}.`;
   });
   if (!size) errs.size = 'Choose your company size.';
 

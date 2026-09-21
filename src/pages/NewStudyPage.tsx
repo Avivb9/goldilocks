@@ -229,14 +229,7 @@ export function NewStudyPage() {
         ))}
       </ol>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 12 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -12 }}
-          transition={{ duration: 0.18 }}
-        >
+      <motion.div key={step} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.18 }}>
           {step === 0 && (
             <Card className="grid gap-5 p-6 md:grid-cols-2">
               <div className="md:col-span-2">
@@ -414,8 +407,7 @@ export function NewStudyPage() {
               </div>
             </Card>
           )}
-        </motion.div>
-      </AnimatePresence>
+      </motion.div>
 
       <div className="mt-6 flex items-center justify-between">
         <Button variant="ghost" icon={<ArrowLeft size={15} />} disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>

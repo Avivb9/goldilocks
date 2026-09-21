@@ -63,7 +63,8 @@ export function memoFacts({ scenario, baseline, study }: MemoInputs): MemoFacts 
   const focusBaseTier = baseline.tiers[focusIdx] ?? focusTier;
   const p1 = baseResult.conversion;
   const p2raw = result.conversion;
-  const mde = Math.abs(p2raw - p1) >= 0.01 ? Math.abs(p2raw - p1) : p1 * 0.1;
+  // Smallest effect worth detecting at our volume: the modeled change, or 20% relative, whichever is larger
+  const mde = Math.max(Math.abs(p2raw - p1), p1 * 0.2);
   const perArm = sampleSizePerArm(p1, p1 + (p2raw >= p1 ? mde : -mde));
   const trialsPerWeek = (scenario.assumptions.leads * scenario.assumptions.trialRate * 12) / 52;
   const weeks = Math.max(2, Math.ceil((perArm * 2) / Math.max(1, trialsPerWeek)));
@@ -83,9 +84,11 @@ export function generateMemo(inputs: MemoInputs): string {
   const inRange = vw.pmc !== null && vw.pme !== null && focusTier.price >= vw.pmc && focusTier.price <= vw.pme;
   const vsIpp = vw.ipp ? relChange(focusTier.price, vw.ipp) : 0;
   const hitTarget = dMrr >= 0.1;
+  const recommend = dMrr > 0.005;
+  const an = /^(8|11|18)$/.test(String(f.weeks)) || String(f.weeks).startsWith('8') ? 'an' : 'a';
   const verdict =
     dMrr > 0.005
-      ? `lifts modeled new MRR ${signedPct(dMrr, 1)} (${money(b.mrr)} → ${money(r.mrr)} per monthly cohort)`
+      ? `lifts modeled new MRR by ${pct(dMrr, 1)} (${money(b.mrr)} → ${money(r.mrr)} per monthly cohort)`
       : `changes modeled new MRR ${signedPct(dMrr, 1)} (${money(b.mrr)} → ${money(r.mrr)})`;
   const rangeTxt =
     vw.pmc !== null && vw.pme !== null
@@ -122,9 +125,9 @@ _Prepared by Aviv Braun, Product Marketing · ${shortDate(date.toISOString())} �
 
 ## TL;DR
 
-We recommend moving to the packaging below. In the model it ${verdict}, with trial-to-paid conversion ${signedPct(dConv, 1)} and ARPA ${signedPct(dArpa, 1)} (${money(b.arpa)} → ${money(r.arpa)}). ${hitTarget ? 'That clears our +10% MRR target.' : 'That is below our +10% MRR target, so we should treat it as a first step rather than the end state.'} We should confirm it with a ${f.weeks}-week A/B price test before a full rollout.
+${recommend ? 'We recommend moving to the packaging below.' : 'We do not recommend shipping this packaging as modeled.'} It ${verdict}, with trial-to-paid conversion ${signedPct(dConv, 1)} and ARPA ${signedPct(dArpa, 1)} (${money(b.arpa)} → ${money(r.arpa)}). ${recommend ? (hitTarget ? 'That clears our +10% MRR target.' : 'That is below our +10% MRR target, so we should treat it as a first step rather than the end state.') : 'The ARPA gain does not make up for the customers we lose, so it misses our +10% MRR target.'} ${recommend ? `We should confirm it with ${an} ${f.weeks}-week A/B price test before a full rollout.` : `If we want to pursue it for strategic reasons, ${an} ${f.weeks}-week A/B test would show whether the model is too pessimistic.`}
 
-## Recommended packaging
+## ${recommend ? 'Recommended packaging' : 'Packaging evaluated'}
 
 ${scenario.tiers.map((t, i) => tierLine(t, baseline.tiers[i])).join('\n')}
 
@@ -144,10 +147,10 @@ ${risks.map((x) => `- ${x}`).join('\n')}
 
 ## A/B price test plan
 
-- **Hypothesis:** ${focusTier.name} at ${money(focusTier.price)} (from ${money(focusBaseTier.price)}) increases new MRR per trial without lowering trial-to-paid conversion by more than ${pct(f.mde, 1)} points.
+- **Hypothesis:** ${focusTier.name} at ${money(focusTier.price)} (from ${money(focusBaseTier.price)}) increases new MRR per trial without lowering trial-to-paid conversion by more than ${(f.mde * 100).toFixed(1)} percentage points.
 - **Design:** 50/50 split of new trial signups at the pricing page, randomized by account. Existing customers are excluded.
 - **Primary metric:** new MRR per trial. **Secondary:** trial-to-paid conversion (baseline ${pct(b.conversion)}), tier mix, annual-plan take rate.
-- **Sample size:** ${perArmTxt} trials per arm to detect a ${pct(f.mde, 1)}-point change in conversion (alpha 0.05, power 0.80). At ${num(trialsMonth)} trials a month that is about **${f.weeks} weeks**.
+- **Sample size:** ${perArmTxt} trials per arm to detect a ${(f.mde * 100).toFixed(1)}-point change in conversion (alpha 0.05, power 0.80). At ${num(trialsMonth)} trials a month that is about **${f.weeks} weeks**. Smaller effects won't be detectable at our volume, so treat the MRR-per-trial readout as directional.
 - **Guardrails:** stop early if conversion falls more than 2× the minimum detectable effect, or if sales-assisted discount requests rise more than 20%.
 - **Decision rule:** ship if new MRR per trial is up and conversion stays within the guardrail; otherwise roll back and re-run the Packaging lab with the observed elasticity.
 

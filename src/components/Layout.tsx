@@ -155,7 +155,7 @@ function WorkspaceSwitcher() {
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#0e5a78] text-[11px] font-bold text-white">T</span>
             {WORKSPACE.name}
-            <span className="rounded bg-sunken px-1.5 py-0.5 text-[10.5px] font-medium text-muted ring-1 ring-line">{WORKSPACE.plan}</span>
+            <span className="hidden rounded bg-sunken px-1.5 py-0.5 text-[10.5px] font-medium whitespace-nowrap text-muted ring-1 ring-line xl:inline">{WORKSPACE.plan}</span>
             <ChevronsUpDown size={14} className="text-faint" />
           </button>
         )}
@@ -288,7 +288,7 @@ function UserMenu() {
         trigger={({ toggle, open }) => (
           <button onClick={toggle} aria-expanded={open} aria-label="User menu" className="flex items-center gap-2 rounded-lg py-1 pr-1.5 pl-1 hover:bg-sunken">
             <Avatar name={profile.name} size={28} />
-            <span className="hidden text-left leading-tight lg:block">
+            <span className="hidden text-left leading-tight whitespace-nowrap xl:block">
               <span className="block text-[13px] font-semibold text-ink">{profile.name}</span>
               <span className="block text-[11px] text-muted">{profile.title}</span>
             </span>

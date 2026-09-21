@@ -58,7 +58,7 @@ export const intro = {
       },
       {
         title: 'A segment-level choice model for packaging',
-        body: 'A range tells you nothing about tiers. Simulating prospects with seats, must-haves and budgets shows who moves up, who moves down, and who walks away.',
+        body: 'A range tells you nothing about tiers. Modeling prospects with seats, must-haves and budgets shows who moves up, who moves down, and who walks away.',
       },
       {
         title: 'A memo that carries a test plan',

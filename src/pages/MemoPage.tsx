@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { ArrowLeft, Check, Copy, Download, Eye, Link2, Pencil, RefreshCw, Share2, Trash2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Markdown, useStreamingText } from '../components/text';
 import { Avatar, Badge, Button, Card, ConfirmModal, Menu, Modal, Select, Textarea } from '../components/ui';
@@ -31,12 +31,17 @@ export function MemoPage() {
   const [streaming, setStreaming] = useState(fresh);
 
   const stream = useStreamingText(memo?.content ?? '', { key: `${id}-${streamKey}`, enabled: streaming, delay: 500, cps: 1400 });
+  // Only finish once this run has actually started; the previous run's "done" can linger for one render.
+  const started = useRef(false);
   useEffect(() => {
-    if (streaming && stream.done) {
+    if (!streaming) return;
+    if (stream.phase !== 'done') started.current = true;
+    else if (started.current) {
+      started.current = false;
       setStreaming(false);
       clearFresh();
     }
-  }, [streaming, stream.done, clearFresh]);
+  }, [streaming, stream.phase, clearFresh]);
 
   const scenario = scenarios.find((s) => s.id === memo?.scenarioId);
   const study = studies.find((s) => s.id === memo?.studyId);

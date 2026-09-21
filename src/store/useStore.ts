@@ -368,7 +368,7 @@ export const useStore = create<State>()(
       setShortcutsOpen: (v) => set({ shortcutsOpen: v }),
     }),
     {
-      name: 'goldilocks-workspace-v1',
+      name: 'goldilocks-workspace-v2',
       version: 1,
       storage: createJSONStorage(() => safeStorage),
       partialize: (s) => ({

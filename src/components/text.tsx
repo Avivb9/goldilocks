@@ -19,15 +19,16 @@ export function useStreamingText(text: string, opts: { key: string; delay?: numb
     }
     setShown('');
     setPhase('thinking');
-    let raf = 0;
-    let start = 0;
+    // timer-driven (not requestAnimationFrame) so it still finishes in a background tab
+    let tick: ReturnType<typeof setInterval> | undefined;
     const t = setTimeout(() => {
       setPhase('streaming');
-      const step = (ts: number) => {
-        if (!start) start = ts;
-        const n = Math.floor(((ts - start) / 1000) * cps);
+      const start = Date.now();
+      tick = setInterval(() => {
+        const n = Math.floor(((Date.now() - start) / 1000) * cps);
         const full = textRef.current;
         if (n >= full.length) {
+          clearInterval(tick);
           setShown(full);
           setPhase('done');
           return;
@@ -35,13 +36,11 @@ export function useStreamingText(text: string, opts: { key: string; delay?: numb
         // cut on a word boundary so words don't flicker
         const cut = full.indexOf(' ', n);
         setShown(full.slice(0, cut === -1 ? n : cut));
-        raf = requestAnimationFrame(step);
-      };
-      raf = requestAnimationFrame(step);
+      }, 24);
     }, delay);
     return () => {
       clearTimeout(t);
-      cancelAnimationFrame(raf);
+      if (tick) clearInterval(tick);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, enabled]);
@@ -144,8 +143,10 @@ export function Markdown({ source, caret }: { source: string; caret?: boolean })
         </ol>,
       );
     } else {
-      const para: string[] = [];
-      while (i < lines.length && lines[i].trim() && !/^(#|- |\d+\. )/.test(lines[i])) {
+      // always consume the current line so partial markup (e.g. a lone "#" mid-stream) can't stall the loop
+      const para: string[] = [line];
+      i++;
+      while (i < lines.length && lines[i].trim() && !/^(#{1,3} |- |\d+\. )/.test(lines[i])) {
         para.push(lines[i]);
         i++;
       }

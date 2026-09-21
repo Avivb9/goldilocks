@@ -140,7 +140,7 @@ export function computeVW(responses: VWResponse[], gridSize = 240): VWResult {
   }
   // Grid spans the practical range of answers (trimming extreme tails for readability)
   const lo = Math.max(0, quantile(s.tc, 0.01) * 0.9);
-  const hi = quantile(s.te, 0.99) * 1.05;
+  const hi = quantile(s.te, 0.97) * 1.08;
   const step = (hi - lo) / (gridSize - 1);
   const points: VWPoint[] = [];
   for (let i = 0; i < gridSize; i++) points.push(curvesAt(s, lo + i * step));

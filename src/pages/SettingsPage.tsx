@@ -472,7 +472,8 @@ function BillingTab() {
       </Card>
       <Card pad={false}>
         <div className="px-5 py-4 text-[15px] font-semibold">Invoices</div>
-        <table className="w-full text-[13px] tabular">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[520px] text-[13px] tabular">
           <tbody>
             {INVOICES.map((inv) => (
               <tr key={inv.id} className="border-t border-line">
@@ -491,6 +492,7 @@ function BillingTab() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
       <div className="text-right">
         <button className="text-[12.5px] font-medium text-muted hover:text-[#b42318]" onClick={() => setCancelOpen(true)}>
