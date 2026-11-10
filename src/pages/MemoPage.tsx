@@ -1,9 +1,10 @@
 import clsx from 'clsx';
-import { ArrowLeft, Check, Copy, Download, Eye, Link2, Pencil, RefreshCw, Share2, Trash2 } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Check, Copy, Download, Eye, Link2, Pencil, RefreshCw, Share2, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Markdown, useStreamingText } from '../components/text';
 import { Avatar, Badge, Button, Card, ConfirmModal, Menu, Modal, Select, Textarea } from '../components/ui';
+import { aiMemoToMarkdown, buildAiMemoInputs, checkGrounding, type Grounding } from '../logic/aiMemo';
 import { simulate } from '../logic/choiceModel';
 import { money, num, pct, relChange, relativeTime, shortDate, signedPct } from '../logic/format';
 import { generateMemo } from '../logic/memo';
@@ -29,6 +30,9 @@ export function MemoPage() {
   const [regenOpen, setRegenOpen] = useState(false);
   const [streamKey, setStreamKey] = useState(0);
   const [streaming, setStreaming] = useState(fresh);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [grounding, setGrounding] = useState<Grounding | null>(null);
 
   const stream = useStreamingText(memo?.content ?? '', { key: `${id}-${streamKey}`, enabled: streaming, delay: 500, cps: 1400 });
   // Only finish once this run has actually started; the previous run's "done" can linger for one render.
@@ -64,12 +68,47 @@ export function MemoPage() {
     }
     toast('Memo copied as markdown');
   };
+  const generateWithAi = async () => {
+    if (!scenario || !study) {
+      toast("This memo's scenario or study was deleted, so there's nothing to write from.", 'error');
+      return;
+    }
+    setAiLoading(true);
+    setAiError(null);
+    setGrounding(null);
+    try {
+      const aiInputs = buildAiMemoInputs({ scenario, baseline, study });
+      const res = await fetch('/api/memo', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ inputs: aiInputs }),
+      });
+      const payload = await res.json().catch(() => null);
+      if (!res.ok || !payload?.memo) {
+        throw new Error(payload?.error ?? 'The memo writer could not be reached.');
+      }
+      updateMemo(memo.id, { content: aiMemoToMarkdown(payload.memo, aiInputs) });
+      setGrounding(checkGrounding(payload.memo, aiInputs));
+      setMode('view');
+      setStreaming(true);
+      setStreamKey((k) => k + 1);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'The memo writer could not be reached.';
+      setAiError(message);
+      toast(message, 'error');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   const regenerate = () => {
     if (!scenario || !study) {
       toast("The memo's scenario or study was deleted, so it can't be regenerated.", 'error');
       return;
     }
     updateMemo(memo.id, { content: generateMemo({ scenario, baseline, study }), title: `${scenario.name}: pricing recommendation` });
+    setGrounding(null);
+    setAiError(null);
     setMode('view');
     setStreaming(true);
     setStreamKey((k) => k + 1);
@@ -94,7 +133,15 @@ export function MemoPage() {
               </button>
             ))}
           </div>
-          <Button icon={<Copy size={14} />} onClick={copyMd} disabled={streaming}>
+          <Button
+            icon={<Sparkles size={14} className={aiLoading ? '' : 'text-brand-700'} />}
+            onClick={generateWithAi}
+            loading={aiLoading}
+            disabled={streaming || aiLoading}
+          >
+            {aiLoading ? 'Writing memo…' : 'Generate AI memo'}
+          </Button>
+          <Button icon={<Copy size={14} />} onClick={copyMd} disabled={streaming || aiLoading}>
             Copy as markdown
           </Button>
           <Button icon={<Download size={14} />} disabled={streaming} onClick={() => { setMode('view'); setTimeout(() => window.print(), 60); }}>
@@ -145,6 +192,46 @@ export function MemoPage() {
         </Card>
 
         <aside className="space-y-4 no-print">
+          {(grounding || aiError || aiLoading) && (
+            <Card>
+              <div className="flex items-center gap-1.5 text-[12px] font-medium text-muted">
+                <Sparkles size={13} className="text-brand-600" /> AI memo
+              </div>
+              {aiLoading && <div className="mt-2 text-[13px] text-muted">Writing from {num(buildAiMemoInputs({ scenario: scenario!, baseline, study: study! }).figures.length)} computed figures…</div>}
+              {!aiLoading && aiError && <div className="mt-2 text-[13px] text-[#b42318]">{aiError}</div>}
+              {!aiLoading && grounding && (
+                <>
+                  <div
+                    className={clsx(
+                      'mt-2 flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium ring-1 ring-inset',
+                      grounding.untraced.length === 0
+                        ? 'bg-brand-50 text-brand-800 ring-brand-200'
+                        : 'bg-[#fef6e7] text-[#8a5a10] ring-[#f6dcaa]',
+                    )}
+                  >
+                    {grounding.untraced.length === 0 ? <ShieldCheck size={15} /> : <AlertTriangle size={15} />}
+                    {grounding.untraced.length === 0 ? '✓ ' : ''}
+                    {num(grounding.traced)}/{num(grounding.total)} numbers traced to your data
+                  </div>
+                  {grounding.untraced.length > 0 && (
+                    <div className="mt-2 text-[12.5px] text-muted">
+                      Not found in the inputs:{' '}
+                      {grounding.untraced.map((h, i) => (
+                        <span key={h.text + i}>
+                          {i > 0 && ', '}
+                          <mark className="rounded bg-[#fdecc8] px-1 font-medium text-[#8a5a10]">{h.text}</mark>
+                        </span>
+                      ))}
+                      . Check these before sending the memo.
+                    </div>
+                  )}
+                  <p className="mt-2 text-[12px] text-faint">
+                    Every number in the memo is matched against the figures Goldilocks computed from this study and scenario.
+                  </p>
+                </>
+              )}
+            </Card>
+          )}
           <Card>
             <div className="text-[12px] font-medium text-muted">Status</div>
             <div className="mt-2 flex items-center justify-between">

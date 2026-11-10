@@ -112,6 +112,14 @@ Results are reweighted by the segment-mix sliders and scaled to monthly trials (
 
 Sample size per arm uses the two-proportion z-test at alpha 0.05 (two-sided) and 80% power. The minimum detectable effect is the modeled conversion change or 20% relative, whichever is larger. Duration is 2n divided by weekly trials.
 
+### AI memo
+
+`api/memo.js` sends the already-computed figures (Van Westendorp price points, tier and segment revenue, test sizing) to Claude Haiku and forces a tool call, so the memo comes back as structured fields rather than prose: recommendation, rationale, risks and price-test plan. The model is told to cite only the figures it was given and never to do arithmetic of its own, and raw survey responses never leave the browser.
+
+Every number in the reply is then extracted and matched back against those figures, with a deliberately tight rounding tolerance (0.05 absolute below 100, 0.5% above). The memo screen shows the result as "✓ 17/17 numbers traced to your data" and highlights anything that is not. The check proves a number exists in the inputs, not that the sentence around it uses it correctly.
+
+The endpoint needs `ANTHROPIC_API_KEY` (locally in `.env.local`, on Vercel as a project environment variable), caps output at 1,500 tokens and rate-limits each IP to 10 memos an hour. Without a key it returns 503 and the button says the writer is not configured. `npm run dev` serves the frontend only; run `vercel dev` to exercise the function locally.
+
 ---
 
 ## 60-second walkthrough (for a screen recording)
